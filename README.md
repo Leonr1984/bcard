@@ -79,17 +79,20 @@ src/
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/yourusername/bcard.git
 cd bcard
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Start the development server**
+
 ```bash
 npm start
 ```
@@ -105,11 +108,13 @@ npm run build
 ## 🔐 Test Credentials
 
 ### Admin Account
+
 - **Email**: admin@gmail.com
 - **Password**: Abc!123Abc
 - **Role**: Admin (full system access)
 
-### Business Accounts
+### Accounts
+
 - **Email**: margol@gmail.com
 - **Password**: Thering2@
 
@@ -120,6 +125,7 @@ npm run build
 - **Password**: Thering2@
 
 ### Create Your Own Account
+
 1. Click "Register"
 2. Fill in your details
 3. Choose account type:
@@ -129,6 +135,7 @@ npm run build
 ## 📱 User Roles
 
 ### Regular User
+
 - View all business cards
 - Search for cards
 - Like/favorite cards
@@ -136,6 +143,7 @@ npm run build
 - Access favorites list
 
 ### Business User
+
 - All Regular User features
 - Create new business cards
 - Edit their own cards
@@ -143,6 +151,7 @@ npm run build
 - Manage their profile
 
 ### Admin User
+
 - All Business User features
 - Access CRM system
 - View all users
@@ -154,11 +163,13 @@ npm run build
 Base URL: `https://bcard-ojqa.onrender.com`
 
 ### Authentication
+
 - `POST /users/login` - User login
 - `POST /users/register` - User registration
 - `POST /users` - Create new user (alias for register)
 
 ### Users
+
 - `GET /users` - Get all users (admin only)
 - `GET /users/:id` - Get user by ID
 - `PUT /users/:id` - Update user profile
@@ -166,6 +177,7 @@ Base URL: `https://bcard-ojqa.onrender.com`
 - `PATCH /users/:id` - Change user status (admin only)
 
 ### Cards
+
 - `GET /cards` - Get all cards
 - `GET /cards/:id` - Get card by ID
 - `GET /cards/user/:userId` - Get cards by user
@@ -177,18 +189,22 @@ Base URL: `https://bcard-ojqa.onrender.com`
 ## 🎨 Features Details
 
 ### Dark Mode
+
 - Toggle between light and dark themes
 - Preference is saved to localStorage
 - Smooth transition between modes
 
 ### Search Functionality
+
 - Real-time search across all cards
 - Search by card title and description
 - Shows matching results in dropdown
 - Navigate directly from search results
 
 ### Business Card Details
+
 Each business card displays:
+
 - Business name and subtitle
 - Description
 - Contact information (phone, email, website)
@@ -197,14 +213,18 @@ Each business card displays:
 - Like count and favorited status
 
 ### User Profiles
+
 Users can:
+
 - View their personal information
 - Edit name, phone, address
 - Update profile image
 - View account type (Regular/Business)
 
 ### CRM System (Admin Only)
+
 Administrators can:
+
 - View all users in a table
 - See user details (name, email, phone, account type)
 - Change user status from Regular to Business
@@ -219,7 +239,7 @@ Administrators can:
   - At least one uppercase letter
   - At least one lowercase letter
   - At least one number
-  - At least one special character (!@#$%^&*-_)
+  - At least one special character (!@#$%^&\*-\_)
 - Tokens stored in localStorage
 - Automatic redirect on authentication errors
 - Protected routes based on user role
@@ -227,6 +247,7 @@ Administrators can:
 ## 📝 Form Validation
 
 All forms include:
+
 - Real-time validation feedback
 - Visual indicators for valid/invalid fields
 - Helpful error messages
@@ -236,6 +257,7 @@ All forms include:
 ## 🌍 Localization
 
 The application supports:
+
 - English (primary language)
 - Hebrew (partial)
 - Russian (partial)
@@ -243,6 +265,7 @@ The application supports:
 ## 📱 Responsive Design
 
 The application is optimized for:
+
 - Desktop computers (1920px and above)
 - Tablets (768px - 1024px)
 - Mobile devices (320px - 767px)
@@ -261,6 +284,7 @@ The application is optimized for:
 ### Deploy to Other Platforms
 
 The project can also be deployed to:
+
 - Netlify
 - GitHub Pages
 - Heroku
@@ -295,6 +319,7 @@ Created with Leonid Rubinshteyn using React and TypeScript
 ## 📞 Support
 
 For support, please contact:
+
 - Email: support@bcard.com
 - Website: https://bcard.com
 

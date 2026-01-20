@@ -88,15 +88,33 @@ export interface CreateCardPayload {
   email: string;
   web: string;
   image: string;
-  address: string;
-  bizNumber: string;
+  country?: string;
+  city?: string;
+  street?: string;
+  houseNumber?: string | number;
+  zip?: string | number;
+  bizNumber?: string | number;
 }
 
 export interface UpdateUserPayload {
-  name?: string;
+  name?: {
+    first: string;
+    middle?: string;
+    last: string;
+  };
   phone?: string;
-  image?: string;
-  address?: string;
+  image?: {
+    url: string;
+    alt: string;
+  };
+  address?: {
+    state: string;
+    country: string;
+    city: string;
+    street: string;
+    houseNumber: number;
+    zip: number;
+  };
 }
 
 export interface ApiError {

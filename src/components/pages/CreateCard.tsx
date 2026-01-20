@@ -13,7 +13,11 @@ export const CreateCard: React.FC = () => {
     email: "",
     web: "",
     image: "",
-    address: "",
+    country: "Israel",
+    city: "",
+    street: "",
+    houseNumber: "",
+    zip: "",
     bizNumber: "",
   });
   const [error, setError] = useState("");
@@ -41,14 +45,18 @@ export const CreateCard: React.FC = () => {
       console.log("Form data:", formData);
 
       const result = await apiService.createCard({
-        title: formData.title,
-        subtitle: formData.subtitle,
-        description: formData.description,
-        phone: formData.phone,
-        email: formData.email,
-        web: formData.web,
-        image: formData.image,
-        address: formData.address,
+        title: formData.title.trim(),
+        subtitle: formData.subtitle.trim(),
+        description: formData.description.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
+        web: formData.web.trim(),
+        image: formData.image.trim(),
+        country: formData.country.trim(),
+        city: formData.city.trim(),
+        street: formData.street.trim(),
+        houseNumber: formData.houseNumber,
+        zip: formData.zip,
         bizNumber: formData.bizNumber,
       });
 
@@ -57,17 +65,22 @@ export const CreateCard: React.FC = () => {
 
       setTimeout(() => {
         navigate("/my-cards");
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
       console.error("=== CREATE CARD ERROR ===");
       console.error("Full error:", err);
       console.error("Response status:", err.response?.status);
       console.error("Response data:", err.response?.data);
-      console.error("Error message:", err.message);
 
       const errorMessage =
-        err.response?.data?.message || err.message || "Error creating card";
-      setError(errorMessage);
+        err.response?.data ||
+        err.message ||
+        "Error creating card. Please check all fields.";
+      setError(
+        typeof errorMessage === "string"
+          ? errorMessage
+          : JSON.stringify(errorMessage)
+      );
     } finally {
       setLoading(false);
     }
@@ -85,7 +98,7 @@ export const CreateCard: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="title">Title *</label>
+            <label htmlFor="title">Business Title *</label>
             <input
               type="text"
               id="title"
@@ -132,7 +145,7 @@ export const CreateCard: React.FC = () => {
               value={formData.phone}
               onChange={handleChange}
               required
-              placeholder="Your phone number"
+              placeholder="050-1234567"
             />
           </div>
 
@@ -145,7 +158,7 @@ export const CreateCard: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="Your email"
+              placeholder="business@example.com"
             />
           </div>
 
@@ -175,30 +188,89 @@ export const CreateCard: React.FC = () => {
             />
           </div>
 
+          <h3 style={{ marginTop: "20px", marginBottom: "15px" }}>
+            Address Information
+          </h3>
+
           <div className="form-group">
-            <label htmlFor="address">Address *</label>
+            <label htmlFor="country">Country *</label>
             <input
               type="text"
-              id="address"
-              name="address"
-              value={formData.address}
+              id="country"
+              name="country"
+              value={formData.country}
               onChange={handleChange}
               required
-              placeholder="Your business address"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="bizNumber">Business Number *</label>
+            <label htmlFor="city">City *</label>
             <input
               type="text"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+              placeholder="Tel Aviv"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="street">Street *</label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              value={formData.street}
+              onChange={handleChange}
+              required
+              placeholder="Dizengoff"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="houseNumber">House Number *</label>
+            <input
+              type="number"
+              id="houseNumber"
+              name="houseNumber"
+              value={formData.houseNumber}
+              onChange={handleChange}
+              required
+              placeholder="123"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="zip">ZIP Code *</label>
+            <input
+              type="number"
+              id="zip"
+              name="zip"
+              value={formData.zip}
+              onChange={handleChange}
+              required
+              placeholder="6000000"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="bizNumber">Business Number (optional)</label>
+            <input
+              type="number"
               id="bizNumber"
               name="bizNumber"
               value={formData.bizNumber}
               onChange={handleChange}
-              required
-              placeholder="7-digit business number"
+              placeholder="Leave empty to auto-generate"
             />
+            <small
+              style={{ color: "#666", marginTop: "5px", display: "block" }}
+            >
+              If not provided, a random number will be generated
+            </small>
           </div>
 
           <button type="submit" disabled={loading} className="btn btn-primary">

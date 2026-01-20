@@ -24,14 +24,15 @@ export const Footer: React.FC = () => {
               <Link to="/about">About</Link>
             </li>
             {isAuthenticated && (
-              <>
-                <li>
-                  <Link to="/favorites">Favorites</Link>
-                </li>
-                <li>
-                  <Link to="/my-cards">My Cards</Link>
-                </li>
-              </>
+              <li>
+                <Link to="/favorites">Favorites</Link>
+              </li>
+            )}
+            {}
+            {isBusiness && (
+              <li>
+                <Link to="/my-cards">My Cards</Link>
+              </li>
             )}
           </ul>
         </div>

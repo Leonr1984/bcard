@@ -132,15 +132,20 @@ export const CardDetail: React.FC = () => {
           <section className="detail-section">
             <h2>Location</h2>
             <p>{formatAddress(card.address)}</p>
-            <iframe
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              title="Business location"
-              src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(
-                formatAddress(card.address)
-              )}`}
-            />
+            {typeof card.address === "object" && card.address.city && (
+              <iframe
+                width="100%"
+                height="400"
+                style={{ border: 0, borderRadius: "8px", marginTop: "10px" }}
+                title="Business location"
+                loading="lazy"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                  `${card.address.street || ""} ${
+                    card.address.houseNumber || ""
+                  }, ${card.address.city || ""}, ${card.address.country || ""}`
+                )}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+              />
+            )}
           </section>
 
           <section className="detail-section">

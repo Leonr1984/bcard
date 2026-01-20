@@ -34,9 +34,7 @@ export const MyCards: React.FC = () => {
   };
 
   const handleDelete = (cardId: string) => {
-    if (window.confirm("Are you sure you want to delete this card?")) {
-      deleteCard(cardId);
-    }
+    deleteCard(cardId);
   };
 
   return (

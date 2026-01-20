@@ -13,7 +13,11 @@ export const Home: React.FC = () => {
   if (isLoading) return <div className="loading">Loading cards...</div>;
   if (error) return <div className="error">{error}</div>;
 
-  const myCards = cards.filter((card) => card.userId === user?._id);
+  const myCards = cards.filter((card) => {
+    const cardUserId = card.user_id || card.userId;
+    return cardUserId === user?._id;
+  });
+
   const displayCards = filter === "my" ? myCards : cards;
 
   const handleLike = (cardId: string) => {

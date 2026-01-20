@@ -7,9 +7,24 @@ import "../../styles/forms.css";
 export const EditCard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [card, setCard] = useState<Card | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    subtitle: "",
+    description: "",
+    phone: "",
+    email: "",
+    web: "",
+    image: "",
+    country: "",
+    city: "",
+    street: "",
+    houseNumber: "",
+    zip: "",
+    bizNumber: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -17,10 +32,43 @@ export const EditCard: React.FC = () => {
       try {
         if (id) {
           const data = await apiService.getCardById(id);
-          setCard(data);
+
+          // Парсим данные карточки
+          const imageUrl =
+            typeof data.image === "string" ? data.image : data.image?.url || "";
+
+          let addressData = {
+            country: "",
+            city: "",
+            street: "",
+            houseNumber: "",
+            zip: "",
+          };
+
+          if (typeof data.address === "object" && data.address) {
+            addressData = {
+              country: data.address.country || "",
+              city: data.address.city || "",
+              street: data.address.street || "",
+              houseNumber: String(data.address.houseNumber || ""),
+              zip: String(data.address.zip || ""),
+            };
+          }
+
+          setFormData({
+            title: data.title,
+            subtitle: data.subtitle,
+            description: data.description,
+            phone: data.phone,
+            email: data.email,
+            web: data.web,
+            image: imageUrl,
+            ...addressData,
+            bizNumber: String(data.bizNumber),
+          });
         }
       } catch (err: any) {
-        setError("Error loading card");
+        setError("Error loading card: " + (err.response?.data || err.message));
       } finally {
         setLoading(false);
       }
@@ -32,156 +80,243 @@ export const EditCard: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (card) {
-      setCard({ ...card, [name]: value });
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError("");
+    setSuccessMessage("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!card) return;
+    if (!id) return;
 
     setIsSubmitting(true);
-    try {
-      const addressValue =
-        typeof card.address === "string"
-          ? card.address
-          : JSON.stringify(card.address);
+    setError("");
+    setSuccessMessage("");
 
-      await apiService.updateCard(card._id, {
-        title: card.title,
-        subtitle: card.subtitle,
-        description: card.description,
-        phone: card.phone,
-        email: card.email,
-        web: card.web,
-        image:
-          typeof card.image === "string" ? card.image : card.image?.url || "",
-        address: addressValue,
-        bizNumber: card.bizNumber.toString(),
+    try {
+      await apiService.updateCard(id, {
+        title: formData.title.trim(),
+        subtitle: formData.subtitle.trim(),
+        description: formData.description.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
+        web: formData.web.trim(),
+        image: formData.image.trim(),
+        country: formData.country.trim(),
+        city: formData.city.trim(),
+        street: formData.street.trim(),
+        houseNumber: formData.houseNumber,
+        zip: formData.zip,
+        bizNumber: formData.bizNumber,
       });
-      navigate("/my-cards");
+
+      setSuccessMessage("Card updated successfully! Redirecting...");
+      setTimeout(() => {
+        navigate("/my-cards");
+      }, 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Error updating card");
+      const errorMessage =
+        err.response?.data || err.message || "Error updating card";
+      setError(
+        typeof errorMessage === "string"
+          ? errorMessage
+          : JSON.stringify(errorMessage)
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!card) return <div className="error">Card not found</div>;
+  if (loading) return <div className="loading">Loading card...</div>;
+  if (error && !formData.title) return <div className="error">{error}</div>;
 
   return (
     <div className="form-page">
       <div className="form-container">
-        <h1>Edit Business Card</h1>
+        <h1>✏️ Edit Business Card</h1>
+
+        {error && <div className="error-message">{error}</div>}
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Title</label>
+            <label htmlFor="title">Business Title *</label>
             <input
               type="text"
+              id="title"
               name="title"
-              value={card.title}
+              value={formData.title}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Subtitle</label>
+            <label htmlFor="subtitle">Subtitle *</label>
             <input
               type="text"
+              id="subtitle"
               name="subtitle"
-              value={card.subtitle}
+              value={formData.subtitle}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Description</label>
+            <label htmlFor="description">Description *</label>
             <textarea
+              id="description"
               name="description"
-              value={card.description}
+              value={formData.description}
               onChange={handleChange}
               required
+              rows={5}
             />
           </div>
+
           <div className="form-group">
-            <label>Phone</label>
+            <label htmlFor="phone">Phone *</label>
             <input
               type="tel"
+              id="phone"
               name="phone"
-              value={card.phone}
+              value={formData.phone}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
+              id="email"
               name="email"
-              value={card.email}
+              value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Website</label>
+            <label htmlFor="web">Website *</label>
             <input
               type="url"
+              id="web"
               name="web"
-              value={card.web}
+              value={formData.web}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Image URL</label>
+            <label htmlFor="image">Image URL *</label>
             <input
               type="url"
+              id="image"
               name="image"
-              value={
-                typeof card.image === "string"
-                  ? card.image
-                  : card.image?.url || ""
-              }
+              value={formData.image}
               onChange={handleChange}
               required
             />
           </div>
+
+          <h3 style={{ marginTop: "20px", marginBottom: "15px" }}>
+            Address Information
+          </h3>
+
           <div className="form-group">
-            <label>Address</label>
+            <label htmlFor="country">Country *</label>
             <input
               type="text"
-              name="address"
-              value={
-                typeof card.address === "string"
-                  ? card.address
-                  : JSON.stringify(card.address)
-              }
+              id="country"
+              name="country"
+              value={formData.country}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Business Number</label>
+            <label htmlFor="city">City *</label>
             <input
               type="text"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="street">Street *</label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              value={formData.street}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="houseNumber">House Number *</label>
+            <input
+              type="number"
+              id="houseNumber"
+              name="houseNumber"
+              value={formData.houseNumber}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="zip">ZIP Code *</label>
+            <input
+              type="number"
+              id="zip"
+              name="zip"
+              value={formData.zip}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="bizNumber">Business Number *</label>
+            <input
+              type="number"
+              id="bizNumber"
               name="bizNumber"
-              value={card.bizNumber}
+              value={formData.bizNumber}
               onChange={handleChange}
               required
             />
           </div>
-          {error && <div className="error-message">{error}</div>}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn btn-primary"
-          >
-            {isSubmitting ? "Updating..." : "Update Card"}
-          </button>
+
+          <div className="form-actions">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn btn-primary"
+            >
+              {isSubmitting ? "⏳ Updating..." : "💾 Update Card"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/my-cards")}
+              className="btn btn-secondary"
+            >
+              ❌ Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>

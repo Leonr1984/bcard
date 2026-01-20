@@ -39,16 +39,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const initializeAuth = async () => {
       try {
         const savedToken = localStorage.getItem("token");
+        const savedUser = localStorage.getItem("user");
 
-        if (savedToken) {
+        if (savedToken && savedUser) {
           try {
             const decoded = jwtDecode<any>(savedToken);
+            const parsedUser = JSON.parse(savedUser);
 
             setToken(savedToken);
-            setUser(decoded);
+            setUser(parsedUser);
           } catch (decodeError) {
-            console.error("Failed to decode token:", decodeError);
+            console.error("Failed to decode token or parse user:", decodeError);
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
             setUser(null);
             setToken(null);
           }
@@ -56,6 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       } catch (err) {
         console.error("Auth initialization error:", err);
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
         setUser(null);
         setToken(null);
       } finally {
@@ -69,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const login = async (email: string, password: string) => {
     try {
       setError(null);
-      const { token: newToken, user: userData } = await apiService.login({
+      const { token: newToken } = await apiService.login({
         email,
         password,
       });
@@ -78,12 +82,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         throw new Error("No token received from server");
       }
 
+      const decoded = jwtDecode<any>(newToken);
+
       localStorage.setItem("token", newToken);
+      localStorage.setItem("user", JSON.stringify(decoded));
+
       setToken(newToken);
-      setUser(userData);
+      setUser(decoded);
     } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || err.message || "Login failed";
+      const errorMessage = err.response?.data || err.message || "Login failed";
       setError(errorMessage);
       console.error("Login error:", errorMessage);
       throw err;
@@ -102,31 +109,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       await apiService.register({
         name: {
           first: name.split(" ")[0] || name,
-          last: name.split(" ")[1] || "",
           middle: "",
+          last: name.split(" ")[1] || "",
         },
+        phone,
         email,
         password,
-        phone,
-        isBusiness,
         image: {
           url: "",
           alt: "",
         },
         address: {
-          state: "IL",
+          state: "",
           country: "Israel",
-          city: "Tel Aviv",
-          street: "Main Street",
-          houseNumber: 1,
-          zip: 6000000,
+          city: "",
+          street: "",
+          houseNumber: 0,
+          zip: 0,
         },
+        isBusiness,
       });
 
       await login(email, password);
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message || err.message || "Registration failed";
+        err.response?.data || err.message || "Registration failed";
       setError(errorMessage);
       console.error("Register error:", errorMessage);
       throw err;
@@ -135,6 +142,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     setToken(null);
     setError(null);

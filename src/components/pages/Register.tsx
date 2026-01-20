@@ -12,6 +12,12 @@ export const Register: React.FC = () => {
     password: "",
     phone: "",
     isBusiness: false,
+
+    country: "Israel",
+    city: "",
+    street: "",
+    houseNumber: "",
+    zip: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +26,7 @@ export const Register: React.FC = () => {
 
   const validatePassword = (pwd: string): boolean => {
     const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[a-zA-Z\d@$!%*?&_-]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){4})(?=.*[!@%$#^&*\-_])[a-zA-Z\d!@%$#^&*\-_]{8,}$/;
     return regex.test(pwd);
   };
 
@@ -49,31 +55,33 @@ export const Register: React.FC = () => {
       await apiService.register({
         name: {
           first: formData.first,
-          last: formData.last,
           middle: "",
+          last: formData.last,
         },
+        phone: formData.phone,
         email: formData.email,
         password: formData.password,
-        phone: formData.phone,
-        isBusiness: formData.isBusiness,
         image: {
           url: "",
           alt: "",
         },
         address: {
-          state: "IL",
-          country: "Israel",
-          city: "Tel Aviv",
-          street: "Main Street",
-          houseNumber: 1,
-          zip: 6000000,
+          state: "",
+          country: formData.country,
+          city: formData.city,
+          street: formData.street,
+          houseNumber: Number(formData.houseNumber),
+          zip: Number(formData.zip),
         },
+        isBusiness: formData.isBusiness,
       });
 
       await login(formData.email, formData.password);
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(
+        err.response?.data || "Registration failed. Please check all fields."
+      );
     } finally {
       setLoading(false);
     }
@@ -85,7 +93,7 @@ export const Register: React.FC = () => {
         <h1>Register</h1>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="first">First Name</label>
+            <label htmlFor="first">First Name *</label>
             <input
               type="text"
               id="first"
@@ -97,7 +105,7 @@ export const Register: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="last">Last Name</label>
+            <label htmlFor="last">Last Name *</label>
             <input
               type="text"
               id="last"
@@ -109,7 +117,7 @@ export const Register: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
@@ -121,7 +129,7 @@ export const Register: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone">Phone</label>
+            <label htmlFor="phone">Phone *</label>
             <input
               type="tel"
               id="phone"
@@ -129,11 +137,12 @@ export const Register: React.FC = () => {
               value={formData.phone}
               onChange={handleChange}
               required
+              placeholder="050-1234567"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password *</label>
             <input
               type="password"
               id="password"
@@ -141,7 +150,72 @@ export const Register: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="Min 8 chars, uppercase, lowercase, number, special char"
+              placeholder="Min 8 chars, uppercase, lowercase, 4 numbers, special char"
+            />
+          </div>
+
+          {}
+          <div className="form-group">
+            <label htmlFor="country">Country *</label>
+            <input
+              type="text"
+              id="country"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="city">City *</label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+              placeholder="Tel Aviv"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="street">Street *</label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              value={formData.street}
+              onChange={handleChange}
+              required
+              placeholder="Dizengoff"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="houseNumber">House Number *</label>
+            <input
+              type="number"
+              id="houseNumber"
+              name="houseNumber"
+              value={formData.houseNumber}
+              onChange={handleChange}
+              required
+              placeholder="123"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="zip">ZIP Code *</label>
+            <input
+              type="number"
+              id="zip"
+              name="zip"
+              value={formData.zip}
+              onChange={handleChange}
+              required
+              placeholder="6000000"
             />
           </div>
 

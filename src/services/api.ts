@@ -35,6 +35,7 @@ class ApiService {
       (error) => {
         if (error.response?.status === 401) {
           localStorage.removeItem("token");
+          localStorage.removeItem("user");
           window.location.href = "/login";
         }
         return Promise.reject(error);
@@ -132,9 +133,7 @@ class ApiService {
   }
 
   async getCards(): Promise<Card[]> {
-    const { data } = await this.api.get<Card[]>(
-      "https://bcard-ojqa.onrender.com/cards"
-    );
+    const { data } = await this.api.get<Card[]>("/cards");
     return data;
   }
 
@@ -158,17 +157,19 @@ class ApiService {
       web: payload.web,
       image: {
         url: payload.image,
-        alt: "Business card image",
+        alt: payload.title || "Business card image",
       },
       address: {
-        state: "IL",
-        country: "Israel",
-        city: "Tel Aviv",
-        street: payload.address,
-        houseNumber: 1,
-        zip: 6000000,
+        state: "",
+        country: payload.country || "Israel",
+        city: payload.city || "",
+        street: payload.street || "",
+        houseNumber: Number(payload.houseNumber) || 0,
+        zip: Number(payload.zip) || 0,
       },
-      bizNumber: payload.bizNumber,
+      bizNumber:
+        Number(payload.bizNumber) ||
+        Math.floor(Math.random() * 9000000) + 1000000,
     });
     return data;
   }
@@ -185,32 +186,24 @@ class ApiService {
     if (payload.phone) updateData.phone = payload.phone;
     if (payload.email) updateData.email = payload.email;
     if (payload.web) updateData.web = payload.web;
-    if (payload.bizNumber) updateData.bizNumber = payload.bizNumber;
+    if (payload.bizNumber) updateData.bizNumber = Number(payload.bizNumber);
 
     if (payload.image) {
-      if (typeof payload.image === "string") {
-        updateData.image = {
-          url: payload.image,
-          alt: "Business card image",
-        };
-      } else {
-        updateData.image = payload.image;
-      }
+      updateData.image = {
+        url: payload.image,
+        alt: payload.title || "Business card image",
+      };
     }
 
-    if (payload.address) {
-      if (typeof payload.address === "string") {
-        updateData.address = {
-          state: "IL",
-          country: "Israel",
-          city: "Tel Aviv",
-          street: payload.address.substring(0, 100),
-          houseNumber: 1,
-          zip: 6000000,
-        };
-      } else {
-        updateData.address = payload.address;
-      }
+    if (payload.city || payload.street) {
+      updateData.address = {
+        state: "",
+        country: payload.country || "Israel",
+        city: payload.city || "",
+        street: payload.street || "",
+        houseNumber: Number(payload.houseNumber) || 0,
+        zip: Number(payload.zip) || 0,
+      };
     }
 
     const { data } = await this.api.put<Card>(`/cards/${cardId}`, updateData);

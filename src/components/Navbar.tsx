@@ -61,13 +61,16 @@ export const Navbar: React.FC = () => {
               <li>
                 <Link to="/favorites">❤️ Favorites</Link>
               </li>
-              <li>
-                <Link to="/my-cards">📇 My Cards</Link>
-              </li>
+              {}
               {isBusiness && (
-                <li>
-                  <Link to="/create-card">➕ Create Card</Link>
-                </li>
+                <>
+                  <li>
+                    <Link to="/my-cards">📇 My Cards</Link>
+                  </li>
+                  <li>
+                    <Link to="/create-card">➕ Create Card</Link>
+                  </li>
+                </>
               )}
               {isAdmin && (
                 <li>
